@@ -22,11 +22,14 @@
 ########################################################################
 include(GrPlatform) #define LIB_SUFFIX
 
-include_directories(${Boost_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR},
+                    ${RAPIDJSON_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
-
 list(APPEND sigmf_sources
-)
+    global.cc
+    capture.cc
+    annotation.cc
+    sigmf.cc )
 
 set(sigmf_sources "${sigmf_sources}" PARENT_SCOPE)
 if(NOT sigmf_sources)
@@ -50,29 +53,6 @@ endif(APPLE)
 include(GrMiscUtils)
 GR_LIBRARY_FOO(gnuradio-sigmf RUNTIME_COMPONENT "sigmf_runtime" DEVEL_COMPONENT "sigmf_devel")
 
-########################################################################
-# Build and register unit test
-########################################################################
-include(GrTest)
-
-include_directories(${CPPUNIT_INCLUDE_DIRS})
-
-list(APPEND test_sigmf_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_sigmf.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/qa_sigmf.cc
-)
-
-add_executable(test-sigmf ${test_sigmf_sources})
-
-target_link_libraries(
-  test-sigmf
-  ${GNURADIO_RUNTIME_LIBRARIES}
-  ${Boost_LIBRARIES}
-  ${CPPUNIT_LIBRARIES}
-  gnuradio-sigmf
-)
-
-GR_ADD_TEST(test_sigmf test-sigmf)
 
 ########################################################################
 # Print summary

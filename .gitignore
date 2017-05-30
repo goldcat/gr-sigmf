@@ -1,0 +1,5 @@
+/build
+*.orig
+.project
+.cproject
+.settings

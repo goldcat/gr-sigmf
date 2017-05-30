@@ -22,5 +22,8 @@
 ########################################################################
 install(FILES
     api.h
-    DESTINATION include/sigmf
+    global.h
+    capture.h
+    annotation.h
+    sigmf.h DESTINATION include/sigmf
 )

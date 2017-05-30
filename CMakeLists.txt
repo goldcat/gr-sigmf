@@ -149,6 +149,16 @@ if(NOT CPPUNIT_FOUND)
 endif()
 
 ########################################################################
+# Find RapidJSON
+########################################################################
+find_package(RapidJSON)
+
+if(NOT RAPIDJSON_FOUND)
+    message(FATAL_ERROR "RapidJSON required to compile sigmf")
+endif()
+
+
+########################################################################
 # Setup doxygen option
 ########################################################################
 if(DOXYGEN_FOUND)
