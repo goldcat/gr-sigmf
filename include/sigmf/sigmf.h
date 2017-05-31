@@ -681,10 +681,9 @@
 #include <sigmf/api.h>
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/document.h>
+#include <rapidjson/error/en.h>
 #include <rapidjson/schema.h>
 #include <rapidjson/stringbuffer.h>
-#include <rapidjson/filereadstream.h>
-#include <rapidjson/error/en.h>
 
 #define RAPIDJSON_BUFFER_SIZE	4096
 
@@ -698,15 +697,45 @@ namespace gr {
     class SIGMF_API sigmf
     {
       public:
-	sigmf (FILE* fp, std::string metadata_filename);
+	sigmf (const std::string &metadata_filename);
+
 	~sigmf ();
 
-      private:
+	void
+	set_sigmf_itr_begin (
+	    const rapidjson::Value::MemberIterator& sigmfitrbegin);
 
-	FILE* d_fp;
+	void
+	set_sigmf_itr_end (
+	    const rapidjson::Value::MemberIterator& sigmfitrend);
 
-	char d_read_buf[RAPIDJSON_BUFFER_SIZE];
-	char d_write_buf[RAPIDJSON_BUFFER_SIZE];
+	void
+	set_capture_itr_begin (
+	    const rapidjson::Value::MemberIterator& captureitrbegin);
+
+	void
+	set_capture_itr_end (
+	    const rapidjson::Value::MemberIterator& captureitrend);
+
+	void
+	set_annotation_itr_begin (
+	    const rapidjson::Value::MemberIterator& annotationitrbegin);
+
+	void
+	set_annotation_itr_end (
+	    const rapidjson::Value::MemberIterator& annotationitrend);
+
+	void
+	set_global_itr_begin (
+	    const rapidjson::Value::MemberIterator& globalitrbegin);
+
+	void
+	set_global_itr_end (
+	    const rapidjson::Value::MemberIterator& globalitrend);
+
+      protected:
+
+	char d_buf[RAPIDJSON_BUFFER_SIZE];
 
 	std::string d_metadata_filename;
 	std::string d_dataset_filename;
@@ -715,22 +744,22 @@ namespace gr {
 	rapidjson::SchemaDocument *d_sd;
 	rapidjson::SchemaValidator *d_validator;
 
-	rapidjson::FileReadStream *d_frs;
+	rapidjson::Value::MemberIterator d_sigmf_itr_begin;
+	rapidjson::Value::MemberIterator d_sigmf_itr_end;
 
-	rapidjson::Value::ConstMemberIterator *d_sigmf_itr_begin;
-	rapidjson::Value::ConstMemberIterator *d_sigmf_itr_end;
+	rapidjson::Value::MemberIterator d_global_itr_begin;
+	rapidjson::Value::MemberIterator d_global_itr_end;
 
-	rapidjson::Value::ConstMemberIterator *d_global_itr_begin;
-	rapidjson::Value::ConstMemberIterator *d_global_itr_end;
+	rapidjson::Value::MemberIterator d_capture_itr_begin;
+	rapidjson::Value::MemberIterator d_capture_itr_end;
 
-	rapidjson::Value::ConstMemberIterator *d_capture_itr_begin;
-	rapidjson::Value::ConstMemberIterator *d_capture_itr_end;
+	rapidjson::Value::MemberIterator d_annotation_itr_begin;
+	rapidjson::Value::MemberIterator d_annotation_itr_end;
 
-	rapidjson::Value::ConstMemberIterator *d_annotation_itr_begin;
-	rapidjson::Value::ConstMemberIterator *d_annotation_itr_end;
 
+      private:
 	void
-	set_filenames(const std::string& metadata_filename);
+	set_filenames (const std::string& metadata_filename);
 
     };
 

@@ -25,5 +25,6 @@ install(FILES
     global.h
     capture.h
     annotation.h
-    sigmf.h DESTINATION include/sigmf
+    sigmf.h
+    sigmf_reader.h DESTINATION include/sigmf
 )

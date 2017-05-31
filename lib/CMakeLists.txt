@@ -29,7 +29,8 @@ list(APPEND sigmf_sources
     global.cc
     capture.cc
     annotation.cc
-    sigmf.cc )
+    sigmf.cc
+    sigmf_reader.cc )
 
 set(sigmf_sources "${sigmf_sources}" PARENT_SCOPE)
 if(NOT sigmf_sources)

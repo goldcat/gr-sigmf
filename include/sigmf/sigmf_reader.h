@@ -675,96 +675,38 @@
  * <http://www.gnu.org/philosophy/why-not-lgpl.html>.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#ifndef INCLUDED_SIGMF_SIGMF_READER_H
+#define INCLUDED_SIGMF_SIGMF_READER_H
 
-#include <gnuradio/io_signature.h>
+#include <sigmf/api.h>
 #include <sigmf/sigmf.h>
+#include <rapidjson/filereadstream.h>
 
 namespace gr {
   namespace sigmf {
 
-    sigmf::sigmf (const std::string &metadata_filename)
+    /*!
+     * \brief <+description+>
+     *
+     */
+    class SIGMF_API sigmf_reader : public sigmf
     {
-      d_doc = new rapidjson::Document();
-      set_filenames (metadata_filename);
-    }
+      public:
+	sigmf_reader (const std::string &metadata_filename);
+	~sigmf_reader ();
 
-    sigmf::~sigmf ()
-    {
-    }
+	void
+	iterate_object (
+	    rapidjson::Value::MemberIterator *itr_begin,
+	    rapidjson::Value::MemberIterator *itr_end);
 
-    void
-    sigmf::set_sigmf_itr_begin (
-	const rapidjson::Value::MemberIterator& sigmfitrbegin)
-    {
-      d_sigmf_itr_begin = sigmfitrbegin;
-    }
+      private:
+	FILE* d_fp;
+	rapidjson::FileReadStream *d_frs;
+    };
 
-    void
-    sigmf::set_sigmf_itr_end (
-	const rapidjson::Value::MemberIterator& sigmfitrend)
-    {
-      d_sigmf_itr_end = sigmfitrend;
-    }
+  } // namespace sigmf
+} // namespace gr
 
-    void
-    sigmf::set_capture_itr_begin (
-	const rapidjson::Value::MemberIterator& captureitrbegin)
-    {
-      d_capture_itr_begin = captureitrbegin;
-    }
-
-    void
-    sigmf::set_capture_itr_end (
-	const rapidjson::Value::MemberIterator& captureitrend)
-    {
-      d_capture_itr_end = captureitrend;
-    }
-
-    void
-    sigmf::set_annotation_itr_begin (
-	const rapidjson::Value::MemberIterator& annotationitrbegin)
-    {
-      d_annotation_itr_begin = annotationitrbegin;
-    }
-
-    void
-    sigmf::set_annotation_itr_end (
-	const rapidjson::Value::MemberIterator& annotationitrend)
-    {
-      d_annotation_itr_end = annotationitrend;
-    }
-
-    void
-    sigmf::set_global_itr_begin (
-	const rapidjson::Value::MemberIterator& globalitrbegin)
-    {
-      d_global_itr_begin = globalitrbegin;
-    }
-
-    void
-    sigmf::set_global_itr_end (
-	const rapidjson::Value::MemberIterator& globalitrend)
-    {
-      d_global_itr_end = globalitrend;
-    }
-
-    void
-    sigmf::set_filenames (const std::string& metadata_filename)
-    {
-      d_metadata_filename = metadata_filename;
-      d_dataset_filename = metadata_filename;
-
-      std::string dataset_suffix = "sigmf-data";
-      size_t prefix_idx = metadata_filename.find_last_of (".") + 1;
-
-      d_dataset_filename.replace (prefix_idx,
-				  dataset_suffix.length (),
-				  dataset_suffix);
-    }
-
-  } /* namespace sigmf */
-} /* namespace gr */
+#endif /* INCLUDED_SIGMF_SIGMF_READER_H */
 

@@ -680,89 +680,71 @@
 #endif
 
 #include <gnuradio/io_signature.h>
-#include <sigmf/sigmf.h>
+#include <sigmf/sigmf_reader.h>
+#include <iostream>
 
 namespace gr {
   namespace sigmf {
 
-    sigmf::sigmf (const std::string &metadata_filename)
+    sigmf_reader::sigmf_reader (const std::string &metadata_filename) :
+	    sigmf (metadata_filename)
     {
-      d_doc = new rapidjson::Document();
-      set_filenames (metadata_filename);
+      d_fp = fopen (metadata_filename.c_str(), "r");
+      d_frs = new rapidjson::FileReadStream(d_fp, d_buf, sizeof(d_buf));
+      if (d_doc->ParseStream<rapidjson::kParseStopWhenDoneFlag> (*d_frs).HasParseError ()) {
+          fprintf (stderr, "\nError(offset %u): %s\n",
+      	     (unsigned) d_doc->GetErrorOffset (),
+      	     GetParseError_En (d_doc->GetParseError ()));
+      }
+      set_sigmf_itr_begin(d_doc->MemberBegin());
+      set_sigmf_itr_end(d_doc->MemberEnd());
+
+      set_global_itr_begin((*d_doc)["global"].GetObject().MemberBegin());
+      set_global_itr_end((*d_doc)["global"].GetObject().MemberEnd());
+
+      set_capture_itr_begin((*d_doc)["capture"].GetObject().MemberBegin());
+      set_capture_itr_end((*d_doc)["capture"].GetObject().MemberEnd());
+
+      set_annotation_itr_begin((*d_doc)["annotation"].GetObject().MemberBegin());
+      set_annotation_itr_end((*d_doc)["annotation"].GetObject().MemberEnd());
+
+      iterate_object (&d_annotation_itr_begin,
+		      &d_annotation_itr_end);
     }
 
-    sigmf::~sigmf ()
+    sigmf_reader::~sigmf_reader ()
     {
-    }
-
-    void
-    sigmf::set_sigmf_itr_begin (
-	const rapidjson::Value::MemberIterator& sigmfitrbegin)
-    {
-      d_sigmf_itr_begin = sigmfitrbegin;
-    }
-
-    void
-    sigmf::set_sigmf_itr_end (
-	const rapidjson::Value::MemberIterator& sigmfitrend)
-    {
-      d_sigmf_itr_end = sigmfitrend;
-    }
-
-    void
-    sigmf::set_capture_itr_begin (
-	const rapidjson::Value::MemberIterator& captureitrbegin)
-    {
-      d_capture_itr_begin = captureitrbegin;
-    }
-
-    void
-    sigmf::set_capture_itr_end (
-	const rapidjson::Value::MemberIterator& captureitrend)
-    {
-      d_capture_itr_end = captureitrend;
     }
 
     void
-    sigmf::set_annotation_itr_begin (
-	const rapidjson::Value::MemberIterator& annotationitrbegin)
+    sigmf_reader::iterate_object (rapidjson::Value::MemberIterator* itr_begin,
+    		rapidjson::Value::MemberIterator* itr_end)
     {
-      d_annotation_itr_begin = annotationitrbegin;
-    }
-
-    void
-    sigmf::set_annotation_itr_end (
-	const rapidjson::Value::MemberIterator& annotationitrend)
-    {
-      d_annotation_itr_end = annotationitrend;
-    }
-
-    void
-    sigmf::set_global_itr_begin (
-	const rapidjson::Value::MemberIterator& globalitrbegin)
-    {
-      d_global_itr_begin = globalitrbegin;
-    }
-
-    void
-    sigmf::set_global_itr_end (
-	const rapidjson::Value::MemberIterator& globalitrend)
-    {
-      d_global_itr_end = globalitrend;
-    }
-
-    void
-    sigmf::set_filenames (const std::string& metadata_filename)
-    {
-      d_metadata_filename = metadata_filename;
-      d_dataset_filename = metadata_filename;
-
-      std::string dataset_suffix = "sigmf-data";
-      size_t prefix_idx = metadata_filename.find_last_of (".") + 1;
-
-      d_dataset_filename.replace (prefix_idx,
-				  dataset_suffix.length (),
-				  dataset_suffix);
+      for (rapidjson::Value::MemberIterator itr = *itr_begin; itr != *itr_end;
+          ++itr) {
+        printf ("%s:", itr->name.GetString ());
+        if (itr->value.GetType () == rapidjson::kObjectType) {
+          printf (" object\n");
+          rapidjson::Value::MemberIterator tmp_itr_begin =
+    	  (itr->value).MemberBegin ();
+          rapidjson::Value::MemberIterator tmp_itr_end =
+    	  (itr->value).MemberEnd ();
+          iterate_object (&tmp_itr_begin, &tmp_itr_end);
+        }
+        else if (itr->value.GetType () == rapidjson::kArrayType) {
+          printf (" array\n");
+        }
+        else if (itr->value.GetType () == rapidjson::kNumberType) {
+              printf (" number\n");
+        }
+        else if (itr->value.GetType () == rapidjson::kFalseType) {
+                  printf (" bool\n");
+            }
+        else {
+          //printf (" %s\n", itr->value.GetString ());
+          printf (" other\n");
+        }
+      }
     }
 
   } /* namespace sigmf */
