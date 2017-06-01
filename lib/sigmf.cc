@@ -696,6 +696,21 @@ namespace gr {
     }
 
     void
+    sigmf::init_object_iterators() {
+      d_sigmf_itr_begin = d_doc->MemberBegin();
+      d_sigmf_itr_end = d_doc->MemberEnd();
+
+      d_global_itr_begin = (*d_doc)["global"].GetObject().MemberBegin();
+      d_global_itr_end = (*d_doc)["global"].GetObject().MemberEnd();
+
+      d_capture_itr_begin = (*d_doc)["capture"].GetObject().MemberBegin();
+      d_capture_itr_end = (*d_doc)["capture"].GetObject().MemberEnd();
+
+      d_annotation_itr_begin = (*d_doc)["annotation"].GetObject().MemberBegin();
+      d_annotation_itr_end = (*d_doc)["annotation"].GetObject().MemberEnd();
+    }
+
+    void
     sigmf::set_sigmf_itr_begin (
 	const rapidjson::Value::MemberIterator& sigmfitrbegin)
     {

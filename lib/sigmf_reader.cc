@@ -689,61 +689,120 @@ namespace gr {
     sigmf_reader::sigmf_reader (const std::string &metadata_filename) :
 	    sigmf (metadata_filename)
     {
-      d_fp = fopen (metadata_filename.c_str(), "r");
-      d_frs = new rapidjson::FileReadStream(d_fp, d_buf, sizeof(d_buf));
-      if (d_doc->ParseStream<rapidjson::kParseStopWhenDoneFlag> (*d_frs).HasParseError ()) {
-          fprintf (stderr, "\nError(offset %u): %s\n",
-      	     (unsigned) d_doc->GetErrorOffset (),
-      	     GetParseError_En (d_doc->GetParseError ()));
+      d_fp = fopen (metadata_filename.c_str (), "r");
+      d_frs = new rapidjson::FileReadStream (d_fp, d_buf,
+					     sizeof(d_buf));
+      if (d_doc->ParseStream<rapidjson::kParseStopWhenDoneFlag> (
+	  *d_frs).HasParseError ()) {
+	throw std::runtime_error (
+	    GetParseError_En (d_doc->GetParseError ()));
       }
-      set_sigmf_itr_begin(d_doc->MemberBegin());
-      set_sigmf_itr_end(d_doc->MemberEnd());
 
-      set_global_itr_begin((*d_doc)["global"].GetObject().MemberBegin());
-      set_global_itr_end((*d_doc)["global"].GetObject().MemberEnd());
+      init_object_iterators ();
 
-      set_capture_itr_begin((*d_doc)["capture"].GetObject().MemberBegin());
-      set_capture_itr_end((*d_doc)["capture"].GetObject().MemberEnd());
-
-      set_annotation_itr_begin((*d_doc)["annotation"].GetObject().MemberBegin());
-      set_annotation_itr_end((*d_doc)["annotation"].GetObject().MemberEnd());
-
-      iterate_object (&d_annotation_itr_begin,
-		      &d_annotation_itr_end);
     }
 
     sigmf_reader::~sigmf_reader ()
     {
     }
 
-    void
-    sigmf_reader::iterate_object (rapidjson::Value::MemberIterator* itr_begin,
-    		rapidjson::Value::MemberIterator* itr_end)
+    global
+    sigmf_reader::get_global ()
     {
-      for (rapidjson::Value::MemberIterator itr = *itr_begin; itr != *itr_end;
-          ++itr) {
-        printf ("%s:", itr->name.GetString ());
-        if (itr->value.GetType () == rapidjson::kObjectType) {
-          printf (" object\n");
-          rapidjson::Value::MemberIterator tmp_itr_begin =
-    	  (itr->value).MemberBegin ();
-          rapidjson::Value::MemberIterator tmp_itr_end =
-    	  (itr->value).MemberEnd ();
-          iterate_object (&tmp_itr_begin, &tmp_itr_end);
-        }
-        else if (itr->value.GetType () == rapidjson::kArrayType) {
-          printf (" array\n");
-        }
-        else if (itr->value.GetType () == rapidjson::kNumberType) {
-              printf (" number\n");
-        }
-        else if (itr->value.GetType () == rapidjson::kFalseType) {
-                  printf (" bool\n");
-            }
-        else {
-          //printf (" %s\n", itr->value.GetString ());
-          printf (" other\n");
-        }
+      global g;
+      for (rapidjson::Value::MemberIterator itr = d_global_itr_begin;
+	  itr != d_global_itr_end; ++itr) {
+	switch (itr->value.GetType ())
+	  {
+	  case rapidjson::kStringType:
+	    {
+	      std::string key = itr->name.GetString ();
+	      std::string value = itr->value.GetString ();
+	      if (key == "core:datatype") {
+		g.set_datatype (value);
+	      }
+	      else if (key == "core:version") {
+		g.set_version (value);
+	      }
+	      else if (key == "core:sha512") {
+		g.set_sha512 (value);
+	      }
+	      else if (key == "core:description") {
+		g.set_description (value);
+	      }
+	      else if (key == "core:author") {
+		g.set_author (value);
+	      }
+	      else if (key == "core:license") {
+		g.set_license (value);
+	      }
+	      else if (key == "core:hw") {
+		g.set_hw (value);
+	      }
+	      else {
+		std::string error = "global: Invalid string field "
+		    + key;
+		throw std::runtime_error (error);
+	      }
+	    }
+	    break;
+	  case rapidjson::kNumberType:
+	    {
+	      std::string key = itr->name.GetString ();
+	      if (key == "core:sample_rate") {
+		double value = itr->value.GetDouble ();
+		g.set_sample_rate (value);
+	      }
+	      else if (key == "core:offset") {
+		size_t value = itr->value.GetInt64 ();
+		g.set_offset (value);
+	      }
+	      else {
+		throw std::runtime_error (
+		    "global: Invalid numeric field");
+	      }
+	    }
+	    break;
+	  default:
+	    {
+	      throw std::runtime_error (
+		  "global: Invalid field datatype");
+	    }
+	    break;
+	  }
+      }
+      return g;
+    }
+
+    void
+    sigmf_reader::iterate_object (
+	rapidjson::Value::MemberIterator* itr_begin,
+	rapidjson::Value::MemberIterator* itr_end)
+    {
+      for (rapidjson::Value::MemberIterator itr = *itr_begin;
+	  itr != *itr_end; ++itr) {
+	printf ("%s:", itr->name.GetString ());
+	if (itr->value.GetType () == rapidjson::kObjectType) {
+	  printf (" object\n");
+	  rapidjson::Value::MemberIterator tmp_itr_begin =
+	      (itr->value).MemberBegin ();
+	  rapidjson::Value::MemberIterator tmp_itr_end =
+	      (itr->value).MemberEnd ();
+	  iterate_object (&tmp_itr_begin, &tmp_itr_end);
+	}
+	else if (itr->value.GetType () == rapidjson::kArrayType) {
+	  printf (" array\n");
+	}
+	else if (itr->value.GetType () == rapidjson::kNumberType) {
+	  printf (" number\n");
+	}
+	else if (itr->value.GetType () == rapidjson::kFalseType) {
+	  printf (" bool\n");
+	}
+	else {
+	  //printf (" %s\n", itr->value.GetString ());
+	  printf (" other\n");
+	}
       }
     }
 

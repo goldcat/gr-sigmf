@@ -702,6 +702,9 @@ namespace gr {
 	~sigmf ();
 
 	void
+	init_object_iterators();
+
+	void
 	set_sigmf_itr_begin (
 	    const rapidjson::Value::MemberIterator& sigmfitrbegin);
 

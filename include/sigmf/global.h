@@ -690,6 +690,7 @@ namespace gr {
     class SIGMF_API global
     {
       public:
+	global ();
 	global (std::string datatype, std::string version);
 	~global ();
 

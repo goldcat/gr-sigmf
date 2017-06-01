@@ -685,6 +685,12 @@
 namespace gr {
   namespace sigmf {
 
+    global::global ()
+    {
+      d_sample_rate = -1;
+      d_offset = -1;
+    }
+
     global::global (std::string datatype, std::string version)
     {
       d_datatype = datatype;

@@ -679,7 +679,11 @@
 #define INCLUDED_SIGMF_SIGMF_READER_H
 
 #include <sigmf/api.h>
+#include <vector>
 #include <sigmf/sigmf.h>
+#include <sigmf/global.h>
+#include <sigmf/capture.h>
+#include <sigmf/annotation.h>
 #include <rapidjson/filereadstream.h>
 
 namespace gr {
@@ -696,9 +700,17 @@ namespace gr {
 	~sigmf_reader ();
 
 	void
-	iterate_object (
-	    rapidjson::Value::MemberIterator *itr_begin,
-	    rapidjson::Value::MemberIterator *itr_end);
+	iterate_object (rapidjson::Value::MemberIterator *itr_begin,
+			rapidjson::Value::MemberIterator *itr_end);
+
+	global
+	get_global ();
+
+	std::vector<capture>
+	get_captures ();
+
+	std::vector<annotation>
+	get_annotations ();
 
       private:
 	FILE* d_fp;
