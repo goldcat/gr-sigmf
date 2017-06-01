@@ -685,7 +685,16 @@
 namespace gr {
   namespace sigmf {
 
-    annotation::annotation(size_t sample_start, size_t sample_count)
+    annotation::annotation ()
+    {
+      d_sample_start = -1;
+      d_sample_count = -1;
+
+      d_freq_lower_edge = -1;
+      d_freq_upper_edge = -1;
+    }
+
+    annotation::annotation (size_t sample_start, size_t sample_count)
     {
       d_sample_start = sample_start;
       d_sample_count = sample_count;
@@ -694,7 +703,7 @@ namespace gr {
       d_freq_upper_edge = -1;
     }
 
-    annotation::~annotation()
+    annotation::~annotation ()
     {
     }
 

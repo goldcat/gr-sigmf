@@ -691,6 +691,7 @@ namespace gr {
     class SIGMF_API annotation
     {
       public:
+	annotation ();
 	annotation (size_t sample_start, size_t sample_count);
 	~annotation ();
 

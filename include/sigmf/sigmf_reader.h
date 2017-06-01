@@ -713,6 +713,10 @@ namespace gr {
 	std::vector<capture>
 	get_captures ();
 
+	annotation
+	get_annotation (rapidjson::Value::MemberIterator begin,
+			rapidjson::Value::MemberIterator end);
+
 	std::vector<annotation>
 	get_annotations ();
 

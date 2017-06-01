@@ -699,7 +699,7 @@ namespace gr {
       }
 
       init_object_iterators ();
-      std::vector<capture> captures = get_captures();
+      std::vector<capture> captures = get_captures ();
     }
 
     sigmf_reader::~sigmf_reader ()
@@ -779,8 +779,8 @@ namespace gr {
 			       rapidjson::Value::MemberIterator end)
     {
       capture c;
-      for (rapidjson::Value::MemberIterator itr = begin;
-	  itr != end; ++itr) {
+      for (rapidjson::Value::MemberIterator itr = begin; itr != end;
+	  ++itr) {
 	switch (itr->value.GetType ())
 	  {
 	  case rapidjson::kStringType:
@@ -810,14 +810,14 @@ namespace gr {
 	      }
 	      else {
 		throw std::runtime_error (
-		    "global: Invalid numeric field");
+		    "capture: Invalid numeric field");
 	      }
 	    }
 	    break;
 	  default:
 	    {
 	      throw std::runtime_error (
-		  "global: Invalid field datatype");
+		  "capture: Invalid field datatype");
 	    }
 	    break;
 	  }
@@ -832,10 +832,86 @@ namespace gr {
       capture c;
       for (rapidjson::Value::ValueIterator itr = d_capture_itr_begin;
 	  itr != d_capture_itr_end; ++itr) {
-	c = get_capture(itr->MemberBegin(), itr->MemberEnd());
-	captures.push_back(c);
+	c = get_capture (itr->MemberBegin (), itr->MemberEnd ());
+	captures.push_back (c);
       }
       return captures;
+    }
+
+    annotation
+    sigmf_reader::get_annotation (
+	rapidjson::Value::MemberIterator begin,
+	rapidjson::Value::MemberIterator end)
+    {
+      annotation a;
+      for (rapidjson::Value::MemberIterator itr = begin; itr != end;
+	  ++itr) {
+	switch (itr->value.GetType ())
+	  {
+	  case rapidjson::kStringType:
+	    {
+	      std::string key = itr->name.GetString ();
+	      std::string value = itr->value.GetString ();
+	      if (key == "core:generator") {
+		a.set_generator (value);
+	      }
+	      else if (key == "core:comment") {
+		a.set_comment (value);
+	      }
+	      else {
+		std::string error =
+		    "annotation: Invalid string field " + key;
+		throw std::runtime_error (error);
+	      }
+	    }
+	    break;
+	  case rapidjson::kNumberType:
+	    {
+	      std::string key = itr->name.GetString ();
+	      if (key == "core:freq_lower_edge") {
+		double value = itr->value.GetDouble ();
+		a.set_freq_lower_edge (value);
+	      }
+	      else if (key == "core:freq_upper_edge") {
+		size_t value = itr->value.GetDouble ();
+		a.set_freq_upper_edge (value);
+	      }
+	      else if (key == "core:sample_start") {
+		size_t value = itr->value.GetInt64 ();
+		a.set_sample_start (value);
+	      }
+	      else if (key == "core:sample_count") {
+		size_t value = itr->value.GetInt64 ();
+		a.set_sample_count (value);
+	      }
+	      else {
+		throw std::runtime_error (
+		    "annotation: Invalid numeric field");
+	      }
+	    }
+	    break;
+	  default:
+	    {
+	      throw std::runtime_error (
+		  "annotation: Invalid field datatype");
+	    }
+	    break;
+	  }
+      }
+      return a;
+    }
+
+    std::vector<annotation>
+    sigmf_reader::get_annotations ()
+    {
+      std::vector<annotation> annotations;
+      annotation a;
+      for (rapidjson::Value::ValueIterator itr = d_annotation_itr_begin;
+	  itr != d_annotation_itr_end; ++itr) {
+	a = get_annotation(itr->MemberBegin (), itr->MemberEnd ());
+	annotations.push_back (a);
+      }
+      return annotations;
     }
 
   } /* namespace sigmf */

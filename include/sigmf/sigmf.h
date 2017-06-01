@@ -722,11 +722,11 @@ namespace gr {
 
 	void
 	set_annotation_itr_begin (
-	    const rapidjson::Value::MemberIterator& annotationitrbegin);
+	    const rapidjson::Value::ValueIterator& annotationitrbegin);
 
 	void
 	set_annotation_itr_end (
-	    const rapidjson::Value::MemberIterator& annotationitrend);
+	    const rapidjson::Value::ValueIterator& annotationitrend);
 
 	void
 	set_global_itr_begin (
@@ -756,8 +756,8 @@ namespace gr {
 	rapidjson::Value::ValueIterator d_capture_itr_begin;
 	rapidjson::Value::ValueIterator d_capture_itr_end;
 
-	rapidjson::Value::MemberIterator d_annotation_itr_begin;
-	rapidjson::Value::MemberIterator d_annotation_itr_end;
+	rapidjson::Value::ValueIterator d_annotation_itr_begin;
+	rapidjson::Value::ValueIterator d_annotation_itr_end;
 
 
       private:
