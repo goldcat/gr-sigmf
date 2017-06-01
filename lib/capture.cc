@@ -685,13 +685,19 @@
 namespace gr {
   namespace sigmf {
 
-    capture::capture(size_t sample_start)
+    capture::capture ()
+    {
+      d_sample_start = -1;
+      d_frequency = -1;
+    }
+
+    capture::capture (size_t sample_start)
     {
       d_sample_start = sample_start;
       d_frequency = -1;
     }
 
-    capture::~capture()
+    capture::~capture ()
     {
     }
 

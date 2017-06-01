@@ -691,6 +691,7 @@ namespace gr {
     class SIGMF_API capture
     {
       public:
+	capture ();
 	capture (size_t sample_start);
 	~capture ();
 

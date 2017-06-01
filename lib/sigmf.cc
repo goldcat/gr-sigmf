@@ -703,8 +703,8 @@ namespace gr {
       d_global_itr_begin = (*d_doc)["global"].GetObject().MemberBegin();
       d_global_itr_end = (*d_doc)["global"].GetObject().MemberEnd();
 
-      d_capture_itr_begin = (*d_doc)["capture"].GetObject().MemberBegin();
-      d_capture_itr_end = (*d_doc)["capture"].GetObject().MemberEnd();
+      d_capture_itr_begin = (*d_doc)["capture"].GetArray().Begin();
+      d_capture_itr_end = (*d_doc)["capture"].GetArray().End();
 
       d_annotation_itr_begin = (*d_doc)["annotation"].GetObject().MemberBegin();
       d_annotation_itr_end = (*d_doc)["annotation"].GetObject().MemberEnd();
@@ -726,14 +726,14 @@ namespace gr {
 
     void
     sigmf::set_capture_itr_begin (
-	const rapidjson::Value::MemberIterator& captureitrbegin)
+	const rapidjson::Value::ValueIterator& captureitrbegin)
     {
       d_capture_itr_begin = captureitrbegin;
     }
 
     void
     sigmf::set_capture_itr_end (
-	const rapidjson::Value::MemberIterator& captureitrend)
+	const rapidjson::Value::ValueIterator& captureitrend)
     {
       d_capture_itr_end = captureitrend;
     }

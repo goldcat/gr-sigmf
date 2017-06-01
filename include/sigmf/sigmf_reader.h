@@ -706,6 +706,10 @@ namespace gr {
 	global
 	get_global ();
 
+	capture
+	get_capture (rapidjson::Value::MemberIterator begin,
+		     rapidjson::Value::MemberIterator end);
+
 	std::vector<capture>
 	get_captures ();
 

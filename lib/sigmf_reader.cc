@@ -699,7 +699,7 @@ namespace gr {
       }
 
       init_object_iterators ();
-
+      std::vector<capture> captures = get_captures();
     }
 
     sigmf_reader::~sigmf_reader ()
@@ -774,36 +774,68 @@ namespace gr {
       return g;
     }
 
-    void
-    sigmf_reader::iterate_object (
-	rapidjson::Value::MemberIterator* itr_begin,
-	rapidjson::Value::MemberIterator* itr_end)
+    capture
+    sigmf_reader::get_capture (rapidjson::Value::MemberIterator begin,
+			       rapidjson::Value::MemberIterator end)
     {
-      for (rapidjson::Value::MemberIterator itr = *itr_begin;
-	  itr != *itr_end; ++itr) {
-	printf ("%s:", itr->name.GetString ());
-	if (itr->value.GetType () == rapidjson::kObjectType) {
-	  printf (" object\n");
-	  rapidjson::Value::MemberIterator tmp_itr_begin =
-	      (itr->value).MemberBegin ();
-	  rapidjson::Value::MemberIterator tmp_itr_end =
-	      (itr->value).MemberEnd ();
-	  iterate_object (&tmp_itr_begin, &tmp_itr_end);
-	}
-	else if (itr->value.GetType () == rapidjson::kArrayType) {
-	  printf (" array\n");
-	}
-	else if (itr->value.GetType () == rapidjson::kNumberType) {
-	  printf (" number\n");
-	}
-	else if (itr->value.GetType () == rapidjson::kFalseType) {
-	  printf (" bool\n");
-	}
-	else {
-	  //printf (" %s\n", itr->value.GetString ());
-	  printf (" other\n");
-	}
+      capture c;
+      for (rapidjson::Value::MemberIterator itr = begin;
+	  itr != end; ++itr) {
+	switch (itr->value.GetType ())
+	  {
+	  case rapidjson::kStringType:
+	    {
+	      std::string key = itr->name.GetString ();
+	      std::string value = itr->value.GetString ();
+	      if (key == "core:datetime") {
+		c.set_datetime (value);
+	      }
+	      else {
+		std::string error = "capture: Invalid string field "
+		    + key;
+		throw std::runtime_error (error);
+	      }
+	    }
+	    break;
+	  case rapidjson::kNumberType:
+	    {
+	      std::string key = itr->name.GetString ();
+	      if (key == "core:frequency") {
+		double value = itr->value.GetDouble ();
+		c.set_frequency (value);
+	      }
+	      else if (key == "core:sample_start") {
+		size_t value = itr->value.GetInt64 ();
+		c.set_sample_start (value);
+	      }
+	      else {
+		throw std::runtime_error (
+		    "global: Invalid numeric field");
+	      }
+	    }
+	    break;
+	  default:
+	    {
+	      throw std::runtime_error (
+		  "global: Invalid field datatype");
+	    }
+	    break;
+	  }
       }
+      return c;
+    }
+
+    std::vector<capture>
+    sigmf_reader::get_captures ()
+    {
+      std::vector<capture> captures;
+      capture c;
+      for (rapidjson::Value::ValueIterator itr = d_capture_itr_begin;
+	  itr != d_capture_itr_end; ++itr) {
+	c = get_capture(itr->MemberBegin(), itr->MemberEnd());
+	captures.push_back(c);
+      }
+      return captures;
     }
 
   } /* namespace sigmf */
