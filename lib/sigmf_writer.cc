@@ -36,13 +36,13 @@ namespace gr {
       d_fp = fopen (metadata_filename.c_str (), "r+");
       d_fws = new rapidjson::FileWriteStream (d_fp, d_buf,
 					      sizeof(d_buf));
-      d_writer = new rapidjson::PrettyWriter<rapidjson::FileWriteStream> (
-	  *d_fws);
+      d_writer = new rapidjson::PrettyWriter<
+	  rapidjson::FileWriteStream> (*d_fws);
     }
 
     sigmf_writer::~sigmf_writer ()
     {
-      fclose(d_fp);
+      fclose (d_fp);
     }
 
     void
@@ -184,6 +184,66 @@ namespace gr {
 	  add_annotation_object (vec[i]);
 	}
 	d_writer->EndArray ();
+      }
+    }
+
+    void
+    sigmf_writer::append_captures (capture c, rapidjson::Document *d)
+    {
+      if ((*d).HasMember ("capture")) {
+	rapidjson::Value *v = parse_capture (c);
+	(*d)["capture"].PushBack (*v, (*d).GetAllocator ());
+	(*d).Accept (*d_writer);
+      }
+      else {
+	throw std::runtime_error("append_captures: no top-level object found");
+      }
+    }
+
+    void
+    sigmf_writer::append_captures (std::vector<capture> vec,
+				   rapidjson::Document *d)
+    {
+      rapidjson::Value *v;
+      if ((*d).HasMember ("capture")) {
+	for (size_t s = 0; s < vec.size (); s++) {
+	  v = parse_capture (vec[s]);
+	  (*d)["capture"].PushBack (*v, (*d).GetAllocator ());
+	}
+	(*d).Accept (*d_writer);
+      }
+      else {
+	throw std::runtime_error("append_captures: no top-level object found");
+      }
+    }
+
+    void
+    sigmf_writer::append_annotations (annotation a, rapidjson::Document *d)
+    {
+      if ((*d).HasMember ("annotation")) {
+	rapidjson::Value *v = parse_annotation (a);
+	(*d)["annotation"].PushBack (*v, (*d).GetAllocator ());
+	(*d).Accept (*d_writer);
+      }
+      else {
+	throw std::runtime_error("append_annotation: no top-level object found");
+      }
+    }
+
+    void
+    sigmf_writer::append_annotations (std::vector<annotation> vec,
+				   rapidjson::Document *d)
+    {
+      rapidjson::Value *v;
+      if ((*d).HasMember ("annotation")) {
+	for (size_t s = 0; s < vec.size (); s++) {
+	  v = parse_annotation (vec[s]);
+	  (*d)["annotation"].PushBack (*v, (*d).GetAllocator ());
+	}
+	(*d).Accept (*d_writer);
+      }
+      else {
+	throw std::runtime_error("append_annotations: no top-level object found");
       }
     }
 
