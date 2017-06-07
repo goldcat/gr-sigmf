@@ -26,9 +26,6 @@
 #include <sigmf/api.h>
 #include <vector>
 #include <sigmf/sigmf.h>
-#include <sigmf/global.h>
-#include <sigmf/capture.h>
-#include <sigmf/annotation.h>
 #include <rapidjson/filereadstream.h>
 
 namespace gr {

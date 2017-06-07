@@ -24,11 +24,7 @@
 #include <sigmf/api.h>
 #include <vector>
 #include <sigmf/sigmf.h>
-#include <sigmf/global.h>
-#include <sigmf/capture.h>
-#include <sigmf/annotation.h>
 #include <rapidjson/filewritestream.h>
-#include <rapidjson/writer.h>
 
 namespace gr {
   namespace sigmf {
@@ -56,7 +52,7 @@ namespace gr {
       private:
 	FILE* d_fp;
 	rapidjson::FileWriteStream *d_fws;
-	rapidjson::Writer<rapidjson::FileWriteStream> *d_writer;
+	rapidjson::PrettyWriter<rapidjson::FileWriteStream> *d_writer;
 
 	void
 	add_capture_object (capture obj);

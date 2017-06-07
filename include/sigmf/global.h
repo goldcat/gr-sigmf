@@ -22,6 +22,7 @@
 #define INCLUDED_SIGMF_GLOBAL_H
 
 #include <sigmf/api.h>
+#include <string>
 
 namespace gr {
   namespace sigmf {

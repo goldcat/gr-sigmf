@@ -18,21 +18,26 @@
  * Boston, MA 02110-1301, USA.
  */
 
-
 #ifndef INCLUDED_SIGMF_SIGMF_H
 #define INCLUDED_SIGMF_SIGMF_H
 
 #include <sigmf/api.h>
+#include <sigmf/global.h>
+#include <sigmf/capture.h>
+#include <sigmf/annotation.h>
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/document.h>
 #include <rapidjson/error/en.h>
 #include <rapidjson/schema.h>
-#include <rapidjson/stringbuffer.h>
+#include <string>
 
 #define RAPIDJSON_BUFFER_SIZE	4096
 
 namespace gr {
   namespace sigmf {
+
+    class sigmf_reader;
+    class sigmf_writer;
 
     /*!
      * \brief Class that represents a valid SiMF metadata file.
@@ -46,7 +51,7 @@ namespace gr {
 	~sigmf ();
 
 	void
-	init_object_iterators();
+	init_object_iterators ();
 
 	void
 	set_sigmf_itr_begin (
@@ -80,6 +85,18 @@ namespace gr {
 	set_global_itr_end (
 	    const rapidjson::Value::MemberIterator& globalitrend);
 
+	rapidjson::Document*
+	get_doc ();
+
+	rapidjson::Value*
+	parse_global (global obj);
+
+	rapidjson::Value*
+	parse_capture (capture obj);
+
+	rapidjson::Value*
+	parse_annotation (annotation obj);
+
       protected:
 
 	char d_buf[RAPIDJSON_BUFFER_SIZE];
@@ -103,8 +120,8 @@ namespace gr {
 	rapidjson::Value::ValueIterator d_annotation_itr_begin;
 	rapidjson::Value::ValueIterator d_annotation_itr_end;
 
-
       private:
+
 	void
 	set_filenames (const std::string& metadata_filename);
 

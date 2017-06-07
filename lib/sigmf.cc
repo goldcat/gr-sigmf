@@ -30,8 +30,9 @@ namespace gr {
 
     sigmf::sigmf (const std::string &metadata_filename)
     {
-      d_doc = new rapidjson::Document();
+      d_doc = new rapidjson::Document ();
       set_filenames (metadata_filename);
+
     }
 
     sigmf::~sigmf ()
@@ -39,18 +40,22 @@ namespace gr {
     }
 
     void
-    sigmf::init_object_iterators() {
-      d_sigmf_itr_begin = d_doc->MemberBegin();
-      d_sigmf_itr_end = d_doc->MemberEnd();
+    sigmf::init_object_iterators ()
+    {
+      d_sigmf_itr_begin = d_doc->MemberBegin ();
+      d_sigmf_itr_end = d_doc->MemberEnd ();
 
-      d_global_itr_begin = (*d_doc)["global"].GetObject().MemberBegin();
-      d_global_itr_end = (*d_doc)["global"].GetObject().MemberEnd();
+      d_global_itr_begin =
+	  (*d_doc)["global"].GetObject ().MemberBegin ();
+      d_global_itr_end = (*d_doc)["global"].GetObject ().MemberEnd ();
 
-      d_capture_itr_begin = (*d_doc)["capture"].GetArray().Begin();
-      d_capture_itr_end = (*d_doc)["capture"].GetArray().End();
+      d_capture_itr_begin = (*d_doc)["capture"].GetArray ().Begin ();
+      d_capture_itr_end = (*d_doc)["capture"].GetArray ().End ();
 
-      d_annotation_itr_begin = (*d_doc)["annotation"].GetArray().Begin();
-      d_annotation_itr_end = (*d_doc)["annotation"].GetArray().End();
+      d_annotation_itr_begin =
+	  (*d_doc)["annotation"].GetArray ().Begin ();
+      d_annotation_itr_end =
+	  (*d_doc)["annotation"].GetArray ().End ();
     }
 
     void
@@ -109,6 +114,141 @@ namespace gr {
       d_global_itr_end = globalitrend;
     }
 
+    rapidjson::Value*
+    sigmf::parse_global (global obj)
+    {
+      rapidjson::Value* val = new rapidjson::Value (
+	  rapidjson::kObjectType);
+      rapidjson::Document d;
+
+      if (obj.get_datatype ().empty ()) {
+	throw std::runtime_error ("parse_global: datatype empty");
+      }
+      rapidjson::Value s (obj.get_datatype ().c_str (),
+			  d.GetAllocator ());
+      val->AddMember ("core:datatype", s, d.GetAllocator ());
+
+      if (obj.get_version ().empty ()) {
+	throw std::runtime_error ("parse_global: version empty");
+      }
+      s.SetString (obj.get_version ().c_str (), d.GetAllocator ());
+      val->AddMember ("core:version", s, d.GetAllocator ());
+
+      if (!obj.get_sha512 ().empty ()) {
+	s.SetString (obj.get_sha512 ().c_str (), d.GetAllocator ());
+	val->AddMember ("core:sha512", s, d.GetAllocator ());
+      }
+
+      if (!obj.get_description ().empty ()) {
+	s.SetString (obj.get_description ().c_str (),
+		     d.GetAllocator ());
+	val->AddMember ("core:description", s, d.GetAllocator ());
+      }
+
+      if (!obj.get_author ().empty ()) {
+	s.SetString (obj.get_author ().c_str (), d.GetAllocator ());
+	val->AddMember ("core:author", s, d.GetAllocator ());
+      }
+
+      if (!obj.get_license ().empty ()) {
+	s.SetString (obj.get_license ().c_str (), d.GetAllocator ());
+	val->AddMember ("core:license", s, d.GetAllocator ());
+      }
+
+      if (!obj.get_hw ().empty ()) {
+	s.SetString (obj.get_hw ().c_str (), d.GetAllocator ());
+	val->AddMember ("core:hw", s, d.GetAllocator ());
+      }
+
+      if (obj.get_sample_rate () != -1) {
+	val->AddMember ("core:sample_rate", obj.get_sample_rate (),
+			d.GetAllocator ());
+      }
+
+      if (obj.get_offset () != -1) {
+	val->AddMember ("core:offset", obj.get_offset (),
+			d.GetAllocator ());
+      }
+
+      return val;
+    }
+
+    rapidjson::Value*
+    sigmf::parse_capture (capture obj)
+    {
+      rapidjson::Value* val = new rapidjson::Value (
+	  rapidjson::kObjectType);
+      rapidjson::Document d;
+
+      if (obj.get_sample_start () != -1) {
+	throw std::runtime_error (
+	    "parse_capture: sample_start empty");
+      }
+      val->AddMember ("core:sample_start", obj.get_sample_start (),
+		      d.GetAllocator ());
+
+      if (obj.get_frequency () == -1) {
+	val->AddMember ("core:frequency", obj.get_frequency (),
+			d.GetAllocator ());
+      }
+
+      if (obj.get_datetime ().empty ()) {
+	rapidjson::Value s (obj.get_datetime ().c_str (),
+			    d.GetAllocator ());
+	val->AddMember ("core:datetime", s, d.GetAllocator ());
+      }
+
+      return val;
+    }
+
+    rapidjson::Value*
+    sigmf::parse_annotation (annotation obj)
+    {
+      rapidjson::Value* val = new rapidjson::Value (
+	  rapidjson::kObjectType);
+      rapidjson::Document d;
+
+      if (obj.get_sample_start () != -1) {
+	throw std::runtime_error (
+	    "parse_capture: sample_start empty");
+      }
+      val->AddMember ("core:sample_start", obj.get_sample_start (),
+		      d.GetAllocator ());
+
+      if (obj.get_sample_count () != -1) {
+	throw std::runtime_error (
+	    "parse_capture: sample_count empty");
+      }
+      val->AddMember ("core:sample_count", obj.get_sample_start (),
+		      d.GetAllocator ());
+
+      if (obj.get_freq_lower_edge () == -1) {
+	val->AddMember ("core:freq_lower_edge",
+			obj.get_freq_lower_edge (),
+			d.GetAllocator ());
+      }
+
+      if (obj.get_freq_upper_edge () == -1) {
+	val->AddMember ("core:freq_upper_edge",
+			obj.get_freq_upper_edge (),
+			d.GetAllocator ());
+      }
+
+      if (obj.get_comment ().empty ()) {
+	rapidjson::Value s (obj.get_comment ().c_str (),
+			    d.GetAllocator ());
+	val->AddMember ("core:comment", s, d.GetAllocator ());
+      }
+
+      if (obj.get_generator ().empty ()) {
+	rapidjson::Value s (obj.get_generator ().c_str (),
+			    d.GetAllocator ());
+	val->AddMember ("core:generator", s, d.GetAllocator ());
+      }
+
+      return val;
+    }
+
     void
     sigmf::set_filenames (const std::string& metadata_filename)
     {
@@ -126,3 +266,8 @@ namespace gr {
   } /* namespace sigmf */
 } /* namespace gr */
 
+rapidjson::Document*
+gr::sigmf::sigmf::get_doc ()
+{
+  return d_doc;
+}

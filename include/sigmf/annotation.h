@@ -22,6 +22,7 @@
 #define INCLUDED_SIGMF_ANNOTATION_H
 
 #include <sigmf/api.h>
+#include <string>
 
 namespace gr {
   namespace sigmf {

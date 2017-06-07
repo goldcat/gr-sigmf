@@ -24,6 +24,7 @@
 
 #include <gnuradio/io_signature.h>
 #include <sigmf/sigmf_writer.h>
+#include <rapidjson/pointer.h>
 #include <iostream>
 
 namespace gr {
@@ -32,15 +33,16 @@ namespace gr {
     sigmf_writer::sigmf_writer (const std::string &metadata_filename) :
 	    sigmf (metadata_filename)
     {
-      d_fp = fopen (metadata_filename.c_str (), "w");
+      d_fp = fopen (metadata_filename.c_str (), "r+");
       d_fws = new rapidjson::FileWriteStream (d_fp, d_buf,
 					      sizeof(d_buf));
-      d_writer = new rapidjson::Writer<rapidjson::FileWriteStream> (
+      d_writer = new rapidjson::PrettyWriter<rapidjson::FileWriteStream> (
 	  *d_fws);
     }
 
     sigmf_writer::~sigmf_writer ()
     {
+      fclose(d_fp);
     }
 
     void

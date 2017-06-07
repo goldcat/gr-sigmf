@@ -22,6 +22,7 @@
 #define INCLUDED_SIGMF_CAPTURE_H
 
 #include <sigmf/api.h>
+#include <string>
 
 namespace gr {
   namespace sigmf {

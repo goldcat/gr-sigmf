@@ -47,6 +47,7 @@ namespace gr {
 
     sigmf_reader::~sigmf_reader ()
     {
+      fclose(d_fp);
     }
 
     global
