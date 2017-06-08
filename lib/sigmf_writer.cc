@@ -39,11 +39,63 @@ namespace gr {
 					      sizeof(d_buf));
       d_writer = new rapidjson::PrettyWriter<
 	  rapidjson::FileWriteStream> (*d_fws);
+
+      init_json ();
     }
 
     sigmf_writer::~sigmf_writer ()
     {
       fclose (d_fp);
+    }
+
+    void
+    sigmf_writer::init_json ()
+    {
+      rapidjson::Value* val;
+      rapidjson::Document d;
+
+      if (d_doc->Empty ()) {
+	d_writer->StartObject ();
+	switch (d_type)
+	  {
+	  case SIGMF_FULL:
+	    {
+	      d_writer->Key ("global");
+	      d_writer->StartObject ();
+	      d_writer->EndObject ();
+
+	      d_writer->Key ("capture");
+	      d_writer->StartArray ();
+	      d_writer->EndArray ();
+
+	      d_writer->Key ("annotation");
+	      d_writer->StartArray ();
+	      d_writer->EndArray ();
+
+	    }
+	    break;
+
+	  case SIGMF_CAPTURE_ONLY:
+	    {
+	      d_writer->Key ("capture");
+	      d_writer->StartArray ();
+	      d_writer->EndArray ();
+	    }
+	    break;
+
+	  case SIGMF_ANNOTATION_ONLY:
+	    {
+	      d_writer->Key ("annotation");
+	      d_writer->StartArray ();
+	      d_writer->EndArray ();
+	    }
+	    break;
+	  default:
+	    throw std::runtime_error (
+		"init_json: Invalid SigMF type");
+	  }
+	d_writer->EndObject ();
+      }
     }
 
     void

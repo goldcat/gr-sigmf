@@ -71,6 +71,9 @@ namespace gr {
 	rapidjson::PrettyWriter<rapidjson::FileWriteStream> *d_writer;
 
 	void
+	init_json ();
+
+	void
 	add_capture_object (capture obj);
 
 	void
