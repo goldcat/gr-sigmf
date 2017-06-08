@@ -30,8 +30,9 @@
 namespace gr {
   namespace sigmf {
 
-    sigmf_writer::sigmf_writer (const std::string &metadata_filename) :
-	    sigmf (metadata_filename)
+    sigmf_writer::sigmf_writer (const std::string &metadata_filename,
+				sigmfType type) :
+	    sigmf (metadata_filename, type)
     {
       d_fp = fopen (metadata_filename.c_str (), "r+");
       d_fws = new rapidjson::FileWriteStream (d_fp, d_buf,
@@ -196,7 +197,8 @@ namespace gr {
 	(*d).Accept (*d_writer);
       }
       else {
-	throw std::runtime_error("append_captures: no top-level object found");
+	throw std::runtime_error (
+	    "append_captures: no top-level object found");
       }
     }
 
@@ -213,12 +215,14 @@ namespace gr {
 	(*d).Accept (*d_writer);
       }
       else {
-	throw std::runtime_error("append_captures: no top-level object found");
+	throw std::runtime_error (
+	    "append_captures: no top-level object found");
       }
     }
 
     void
-    sigmf_writer::append_annotations (annotation a, rapidjson::Document *d)
+    sigmf_writer::append_annotations (annotation a,
+				      rapidjson::Document *d)
     {
       if ((*d).HasMember ("annotation")) {
 	rapidjson::Value *v = parse_annotation (a);
@@ -226,13 +230,14 @@ namespace gr {
 	(*d).Accept (*d_writer);
       }
       else {
-	throw std::runtime_error("append_annotation: no top-level object found");
+	throw std::runtime_error (
+	    "append_annotation: no top-level object found");
       }
     }
 
     void
     sigmf_writer::append_annotations (std::vector<annotation> vec,
-				   rapidjson::Document *d)
+				      rapidjson::Document *d)
     {
       rapidjson::Value *v;
       if ((*d).HasMember ("annotation")) {
@@ -243,7 +248,8 @@ namespace gr {
 	(*d).Accept (*d_writer);
       }
       else {
-	throw std::runtime_error("append_annotations: no top-level object found");
+	throw std::runtime_error (
+	    "append_annotations: no top-level object found");
       }
     }
 

@@ -37,7 +37,8 @@ namespace gr {
     class SIGMF_API sigmf_writer : public sigmf
     {
       public:
-	sigmf_writer (const std::string &metadata_filename);
+	sigmf_writer (const std::string &metadata_filename,
+		      sigmfType type);
 
 	~sigmf_writer ();
 

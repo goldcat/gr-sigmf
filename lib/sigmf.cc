@@ -28,90 +28,16 @@
 namespace gr {
   namespace sigmf {
 
-    sigmf::sigmf (const std::string &metadata_filename)
+    sigmf::sigmf (const std::string &metadata_filename,
+		  sigmfType type) :
+	    d_type (type)
     {
       d_doc = new rapidjson::Document ();
       set_filenames (metadata_filename);
-
     }
 
     sigmf::~sigmf ()
     {
-    }
-
-    void
-    sigmf::init_object_iterators ()
-    {
-      d_sigmf_itr_begin = d_doc->MemberBegin ();
-      d_sigmf_itr_end = d_doc->MemberEnd ();
-
-      d_global_itr_begin =
-	  (*d_doc)["global"].GetObject ().MemberBegin ();
-      d_global_itr_end = (*d_doc)["global"].GetObject ().MemberEnd ();
-
-      d_capture_itr_begin = (*d_doc)["capture"].GetArray ().Begin ();
-      d_capture_itr_end = (*d_doc)["capture"].GetArray ().End ();
-
-      d_annotation_itr_begin =
-	  (*d_doc)["annotation"].GetArray ().Begin ();
-      d_annotation_itr_end =
-	  (*d_doc)["annotation"].GetArray ().End ();
-    }
-
-    void
-    sigmf::set_sigmf_itr_begin (
-	const rapidjson::Value::MemberIterator& sigmfitrbegin)
-    {
-      d_sigmf_itr_begin = sigmfitrbegin;
-    }
-
-    void
-    sigmf::set_sigmf_itr_end (
-	const rapidjson::Value::MemberIterator& sigmfitrend)
-    {
-      d_sigmf_itr_end = sigmfitrend;
-    }
-
-    void
-    sigmf::set_capture_itr_begin (
-	const rapidjson::Value::ValueIterator& captureitrbegin)
-    {
-      d_capture_itr_begin = captureitrbegin;
-    }
-
-    void
-    sigmf::set_capture_itr_end (
-	const rapidjson::Value::ValueIterator& captureitrend)
-    {
-      d_capture_itr_end = captureitrend;
-    }
-
-    void
-    sigmf::set_annotation_itr_begin (
-	const rapidjson::Value::ValueIterator& annotationitrbegin)
-    {
-      d_annotation_itr_begin = annotationitrbegin;
-    }
-
-    void
-    sigmf::set_annotation_itr_end (
-	const rapidjson::Value::ValueIterator& annotationitrend)
-    {
-      d_annotation_itr_end = annotationitrend;
-    }
-
-    void
-    sigmf::set_global_itr_begin (
-	const rapidjson::Value::MemberIterator& globalitrbegin)
-    {
-      d_global_itr_begin = globalitrbegin;
-    }
-
-    void
-    sigmf::set_global_itr_end (
-	const rapidjson::Value::MemberIterator& globalitrend)
-    {
-      d_global_itr_end = globalitrend;
     }
 
     rapidjson::Value*
@@ -247,6 +173,12 @@ namespace gr {
       }
 
       return val;
+    }
+
+    sigmfType
+    sigmf::get_type () const
+    {
+      return d_type;
     }
 
     void

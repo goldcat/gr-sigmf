@@ -46,44 +46,9 @@ namespace gr {
     class SIGMF_API sigmf
     {
       public:
-	sigmf (const std::string &metadata_filename);
+	sigmf (const std::string &metadata_filename, sigmfType type);
 
 	~sigmf ();
-
-	void
-	init_object_iterators ();
-
-	void
-	set_sigmf_itr_begin (
-	    const rapidjson::Value::MemberIterator& sigmfitrbegin);
-
-	void
-	set_sigmf_itr_end (
-	    const rapidjson::Value::MemberIterator& sigmfitrend);
-
-	void
-	set_capture_itr_begin (
-	    const rapidjson::Value::ValueIterator& captureitrbegin);
-
-	void
-	set_capture_itr_end (
-	    const rapidjson::Value::ValueIterator& captureitrend);
-
-	void
-	set_annotation_itr_begin (
-	    const rapidjson::Value::ValueIterator& annotationitrbegin);
-
-	void
-	set_annotation_itr_end (
-	    const rapidjson::Value::ValueIterator& annotationitrend);
-
-	void
-	set_global_itr_begin (
-	    const rapidjson::Value::MemberIterator& globalitrbegin);
-
-	void
-	set_global_itr_end (
-	    const rapidjson::Value::MemberIterator& globalitrend);
 
 	rapidjson::Document*
 	get_doc ();
@@ -96,6 +61,9 @@ namespace gr {
 
 	rapidjson::Value*
 	parse_annotation (annotation obj);
+
+	sigmfType
+	get_type () const;
 
       protected:
 
@@ -119,6 +87,11 @@ namespace gr {
 
 	rapidjson::Value::ValueIterator d_annotation_itr_begin;
 	rapidjson::Value::ValueIterator d_annotation_itr_end;
+
+	sigmf_reader *reader;
+	sigmf_writer *writer;
+
+	sigmfType d_type;
 
       private:
 

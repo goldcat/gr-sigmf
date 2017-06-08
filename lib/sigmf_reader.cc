@@ -29,8 +29,9 @@
 namespace gr {
   namespace sigmf {
 
-    sigmf_reader::sigmf_reader (const std::string &metadata_filename) :
-	    sigmf (metadata_filename)
+    sigmf_reader::sigmf_reader (const std::string &metadata_filename,
+				sigmfType type) :
+	    sigmf (metadata_filename, type)
     {
       d_fp = fopen (metadata_filename.c_str (), "r");
       d_frs = new rapidjson::FileReadStream (d_fp, d_buf,
@@ -41,18 +42,131 @@ namespace gr {
 	    GetParseError_En (d_doc->GetParseError ()));
       }
 
-      init_object_iterators ();
+      init_object_iterators (d_type);
       std::vector<capture> captures = get_captures ();
     }
 
     sigmf_reader::~sigmf_reader ()
     {
-      fclose(d_fp);
+      fclose (d_fp);
+    }
+
+    void
+    sigmf_reader::init_object_iterators (sigmfType type)
+    {
+      d_sigmf_itr_begin = d_doc->MemberBegin ();
+      d_sigmf_itr_end = d_doc->MemberEnd ();
+
+      switch (type)
+	{
+	case SIGMF_FULL:
+	  {
+	    d_global_itr_begin =
+		(*d_doc)["global"].GetObject ().MemberBegin ();
+	    d_global_itr_end =
+		(*d_doc)["global"].GetObject ().MemberEnd ();
+
+	    d_capture_itr_begin =
+		(*d_doc)["capture"].GetArray ().Begin ();
+	    d_capture_itr_end =
+		(*d_doc)["capture"].GetArray ().End ();
+
+	    d_annotation_itr_begin =
+		(*d_doc)["annotation"].GetArray ().Begin ();
+	    d_annotation_itr_end =
+		(*d_doc)["annotation"].GetArray ().End ();
+	  }
+	  break;
+	case SIGMF_CAPTURE_ONLY:
+	  {
+	    d_capture_itr_begin =
+		(*d_doc)["capture"].GetArray ().Begin ();
+	    d_capture_itr_end =
+		(*d_doc)["capture"].GetArray ().End ();
+	  }
+	  break;
+	case SIGMF_ANNOTATION_ONLY:
+	  {
+	    d_annotation_itr_begin =
+		(*d_doc)["annotation"].GetArray ().Begin ();
+	    d_annotation_itr_end =
+		(*d_doc)["annotation"].GetArray ().End ();
+	  }
+	  break;
+	default:
+	  throw std::runtime_error (
+	      "init_object_iterators: invalid sigmf type");
+	}
+    }
+
+    void
+    sigmf_reader::set_sigmf_itr_begin (
+	const rapidjson::Value::MemberIterator& sigmfitrbegin)
+    {
+      d_sigmf_itr_begin = sigmfitrbegin;
+    }
+
+    void
+    sigmf_reader::set_sigmf_itr_end (
+	const rapidjson::Value::MemberIterator& sigmfitrend)
+    {
+      d_sigmf_itr_end = sigmfitrend;
+    }
+
+    void
+    sigmf_reader::set_capture_itr_begin (
+	const rapidjson::Value::ValueIterator& captureitrbegin)
+    {
+      d_capture_itr_begin = captureitrbegin;
+    }
+
+    void
+    sigmf_reader::set_capture_itr_end (
+	const rapidjson::Value::ValueIterator& captureitrend)
+    {
+      d_capture_itr_end = captureitrend;
+    }
+
+    void
+    sigmf_reader::set_annotation_itr_begin (
+	const rapidjson::Value::ValueIterator& annotationitrbegin)
+    {
+      d_annotation_itr_begin = annotationitrbegin;
+    }
+
+    void
+    sigmf_reader::set_annotation_itr_end (
+	const rapidjson::Value::ValueIterator& annotationitrend)
+    {
+      d_annotation_itr_end = annotationitrend;
+    }
+
+    void
+    sigmf_reader::set_global_itr_begin (
+	const rapidjson::Value::MemberIterator& globalitrbegin)
+    {
+      d_global_itr_begin = globalitrbegin;
+    }
+
+    void
+    sigmf_reader::set_global_itr_end (
+	const rapidjson::Value::MemberIterator& globalitrend)
+    {
+      d_global_itr_end = globalitrend;
     }
 
     global
     sigmf_reader::get_global ()
     {
+      if (!(*d_doc).HasMember("global")) {
+	throw std::runtime_error (
+		    "get_global: no global object found");
+      }
+      if (!d_type == SIGMF_FULL) {
+	throw std::runtime_error (
+	    "get_global: parsing wrong SigMF file type");
+      }
+
       global g;
       for (rapidjson::Value::MemberIterator itr = d_global_itr_begin;
 	  itr != d_global_itr_end; ++itr) {
@@ -122,6 +236,15 @@ namespace gr {
     sigmf_reader::get_capture (rapidjson::Value::MemberIterator begin,
 			       rapidjson::Value::MemberIterator end)
     {
+      if (!(*d_doc).HasMember("capture")) {
+	throw std::runtime_error (
+		    "get_capture: no capture object found");
+      }
+      if (d_type == SIGMF_ANNOTATION_ONLY) {
+	throw std::runtime_error (
+	    "get_capture: parsing SIGMF_ANNOTATION_ONLY");
+      }
+
       capture c;
       for (rapidjson::Value::MemberIterator itr = begin; itr != end;
 	  ++itr) {
@@ -172,6 +295,14 @@ namespace gr {
     std::vector<capture>
     sigmf_reader::get_captures ()
     {
+      if (!(*d_doc).HasMember("capture")) {
+	throw std::runtime_error (
+		    "get_capture: no capture object found");
+      }
+      if (d_type == SIGMF_ANNOTATION_ONLY) {
+	throw std::runtime_error (
+	    "get_capture: parsing SIGMF_ANNOTATION_ONLY");
+      }
       std::vector<capture> captures;
       capture c;
       for (rapidjson::Value::ValueIterator itr = d_capture_itr_begin;
@@ -187,6 +318,14 @@ namespace gr {
 	rapidjson::Value::MemberIterator begin,
 	rapidjson::Value::MemberIterator end)
     {
+      if (!(*d_doc).HasMember("annotation")) {
+	throw std::runtime_error (
+		    "get_annotation: no annotation object found");
+      }
+      if (d_type == SIGMF_CAPTURE_ONLY) {
+	throw std::runtime_error (
+	    "get_annotation: parsing SIGMF_CAPTURE_ONLY");
+      }
       annotation a;
       for (rapidjson::Value::MemberIterator itr = begin; itr != end;
 	  ++itr) {
@@ -248,11 +387,21 @@ namespace gr {
     std::vector<annotation>
     sigmf_reader::get_annotations ()
     {
+      if (!(*d_doc).HasMember("annotation")) {
+	throw std::runtime_error (
+		    "get_annotation: no annotation object found");
+      }
+      if (d_type == SIGMF_CAPTURE_ONLY) {
+	throw std::runtime_error (
+	    "get_annotation: parsing SIGMF_CAPTURE_ONLY");
+      }
+
       std::vector<annotation> annotations;
       annotation a;
-      for (rapidjson::Value::ValueIterator itr = d_annotation_itr_begin;
-	  itr != d_annotation_itr_end; ++itr) {
-	a = get_annotation(itr->MemberBegin (), itr->MemberEnd ());
+      for (rapidjson::Value::ValueIterator itr =
+	  d_annotation_itr_begin; itr != d_annotation_itr_end;
+	  ++itr) {
+	a = get_annotation (itr->MemberBegin (), itr->MemberEnd ());
 	annotations.push_back (a);
       }
       return annotations;

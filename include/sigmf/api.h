@@ -30,4 +30,10 @@
 #  define SIGMF_API __GR_ATTR_IMPORT
 #endif
 
+typedef enum sigmf_type
+{
+  SIGMF_FULL = 0, SIGMF_CAPTURE_ONLY, SIGMF_ANNOTATION_ONLY
+
+} sigmfType;
+
 #endif /* INCLUDED_SIGMF_API_H */
