@@ -53,6 +53,45 @@ namespace gr {
 	rapidjson::Document*
 	get_doc ();
 
+	void
+	iterate_object (rapidjson::Value::MemberIterator *itr_begin,
+			rapidjson::Value::MemberIterator *itr_end);
+
+	void
+	init_object_iterators (sigmfType type);
+
+	void
+	set_sigmf_itr_begin (
+	    const rapidjson::Value::MemberIterator& sigmfitrbegin);
+
+	void
+	set_sigmf_itr_end (
+	    const rapidjson::Value::MemberIterator& sigmfitrend);
+
+	void
+	set_capture_itr_begin (
+	    const rapidjson::Value::ValueIterator& captureitrbegin);
+
+	void
+	set_capture_itr_end (
+	    const rapidjson::Value::ValueIterator& captureitrend);
+
+	void
+	set_annotation_itr_begin (
+	    const rapidjson::Value::ValueIterator& annotationitrbegin);
+
+	void
+	set_annotation_itr_end (
+	    const rapidjson::Value::ValueIterator& annotationitrend);
+
+	void
+	set_global_itr_begin (
+	    const rapidjson::Value::MemberIterator& globalitrbegin);
+
+	void
+	set_global_itr_end (
+	    const rapidjson::Value::MemberIterator& globalitrend);
+
 	rapidjson::Value*
 	parse_global (global obj);
 
