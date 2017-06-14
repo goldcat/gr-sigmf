@@ -35,7 +35,14 @@ namespace gr {
     {
       public:
 	global ();
+
 	global (std::string datatype, std::string version);
+
+	global (std::string datatype, std::string version,
+		double sample_rate, std::string sha512, size_t offset,
+		std::string description, std::string author,
+		std::string license, std::string hw);
+
 	~global ();
 
 	const std::string&

@@ -8,16 +8,10 @@
 %include "sigmf_swig_doc.i"
 
 %{
-#include "sigmf/global.h"
-#include "sigmf/capture.h"
-#include "sigmf/annotation.h"
-#include "sigmf/sigmf.h"
-#include "sigmf/sigmf_reader.h"
-#include "sigmf/sigmf_writer.h"
+
+#include "sigmf/sigmf_sink.h"
 %}
-%include "sigmf/global.h"
-%include "sigmf/capture.h"
-%include "sigmf/annotation.h"
-%include "sigmf/sigmf.h"
-%include "sigmf/sigmf_reader.h"
-%include "sigmf/sigmf_writer.h"
+
+%include "sigmf/sigmf_sink.h"
+
+GR_SWIG_BLOCK_MAGIC2(sigmf, sigmf_sink);

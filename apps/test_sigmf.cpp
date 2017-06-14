@@ -19,7 +19,7 @@ main ()
 {
 
   std::string file = "/home/ctriant/test2.json";
-  gr::sigmf::sigmf_reader reader = gr::sigmf::sigmf_reader(file);
+  gr::sigmf::sigmf_reader reader = gr::sigmf::sigmf_reader(file, SIGMF_FULL);
   gr::sigmf::global g = reader.get_global();
   std::cout << g.get_datatype() << std::endl;
   return 0;

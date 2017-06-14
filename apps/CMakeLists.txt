@@ -22,10 +22,11 @@ include(GrPython)
 ########################################################################
 # Setup executables
 ########################################################################
-add_executable (test_sigmf test_sigmf.cpp)
-target_link_libraries(test_sigmf gnuradio-sigmf)
+#add_executable (test_sigmf test_sigmf.cpp)
+#target_link_libraries(test_sigmf gnuradio-sigmf)
 
 GR_PYTHON_INSTALL(
-    PROGRAMS test_sigmf
+#    PROGRAMS test_sigmf
+    PROGRAMS
     DESTINATION bin
 )

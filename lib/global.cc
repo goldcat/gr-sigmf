@@ -34,6 +34,23 @@ namespace gr {
       d_offset = -1;
     }
 
+    global::global (std::string datatype, std::string version,
+		    double sample_rate, std::string sha512,
+		    size_t offset, std::string description,
+		    std::string author, std::string license,
+		    std::string hw)
+    {
+      d_datatype = datatype;
+      d_version = version;
+      d_sample_rate = sample_rate;
+      d_sha512 = sha512;
+      d_offset = offset;
+      d_description = description;
+      d_author = author;
+      d_license = license;
+      d_hw = hw;
+    }
+
     global::global (std::string datatype, std::string version)
     {
       d_datatype = datatype;

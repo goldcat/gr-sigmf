@@ -31,7 +31,8 @@ list(APPEND sigmf_sources
     annotation.cc
     sigmf.cc
     sigmf_reader.cc
-    sigmf_writer.cc )
+    sigmf_writer.cc
+    sigmf_sink_impl.cc )
 
 set(sigmf_sources "${sigmf_sources}" PARENT_SCOPE)
 if(NOT sigmf_sources)

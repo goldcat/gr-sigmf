@@ -43,7 +43,6 @@ namespace gr {
       }
 
       init_object_iterators (d_type);
-      std::vector<capture> captures = get_captures ();
     }
 
     sigmf_reader::~sigmf_reader ()
